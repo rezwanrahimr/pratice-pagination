@@ -5,12 +5,25 @@ import AllDataCss from './AllDataCss.css';
 
 const AllData = () => {
     const [data, setData] = useState([]);
+    const [dataCount,setDataCount] = useState(0);
+    const [selectPage,setSelectPage] = useState(0);
+    const [size,setSize] = useState(10);
+
+    useEffect(()=>{
+        fetch('http://localhost:5000/postCount')
+        .then(res => res.json())
+        .then(data => {
+            const count = data.result;
+            const result = Math.ceil(count/10)
+            setDataCount(result);
+        })
+    })
 
     useEffect(() => {
-        fetch('https://jsonplaceholder.typicode.com/posts')
+        fetch(`http://localhost:5000/postcountt?page=${selectPage}&size=${size}`)
             .then(res => res.json())
             .then(data => setData(data));
-    }, [])
+    }, [selectPage,size])
     console.log(data)
     return (
         <div className=''>
@@ -30,6 +43,22 @@ const AllData = () => {
 
                 </div>)
             }
+            </div>
+            <div>
+               {
+                   [...Array(dataCount).keys()].map(number => <><button onClick={()=>setSelectPage(number)}
+                  className={selectPage == number ? 'select':''}
+                   >{number+1}</button></>)
+                   
+               }
+               {
+                   size
+               }
+               <select onClick={(e)=> setSize(e.target.value)}>
+                   <option value="5">5</option>
+                   <option value="10">10</option>
+                   <option value="10">20</option>
+               </select>
             </div>
 
         </div>
